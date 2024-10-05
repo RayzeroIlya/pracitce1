@@ -28,7 +28,7 @@ void setConfig() {
         else {
        ofstream fout;
        fout.open (schema.name+"/"+table_name+"/"+"1.csv"); 
-       fout << "\"pk\"" <<",";
+        fout << "\""+table_name+"_" <<"pk\"" <<",";
        int i=0;
     
         for( const auto& column : columns) {
@@ -38,7 +38,32 @@ void setConfig() {
         }
         fout << endl;
         fout.close();
+        cout << "Created "+schema.name+"/"+table_name+"/"+table_name+"1.csv"<<endl;
         }
+        fin.close();
+        fin.open(schema.name+"/"+table_name+"/"+table_name+"_pk_sequence");
+        if (fin.good()) {
+            cout << schema.name+"/"+table_name+"/"+table_name+"_pk_sequence is already exist!" << endl;
+        } else{
+            ofstream fout;
+            fout.open(schema.name+"/"+table_name+"/"+table_name+"_pk_sequence");
+            fout << "\"0\"" << endl;
+            fout.close();
+            cout <<  "Created "+schema.name+"/"+table_name+"/"+table_name+"_pk_sequence"<< endl;
+        }
+        fin.close();
+        fin.open(schema.name+"/"+table_name+"/"+table_name+"_lock");
+        if (fin.good()){
+            cout << schema.name+"/"+table_name+"/"+table_name+"_lock is already exist!"<< endl;
+        }else{
+            ofstream fout;
+            fout.open(schema.name+"/"+table_name+"/"+table_name+"_lock");
+            fout << "\"0\""<<endl;
+            fout.close();
+            cout << "Created "+schema.name+"/"+table_name+"/"+table_name+"_lock" <<endl;
+        }
+        fin.close();
+    
     }
 }
 }   
