@@ -1,12 +1,8 @@
-#include <iostream>
-#include <string>
-#include "json.hpp"
-
-using json = nlohmann::json;
-using namespace std;
-
+#include "main.h"
+#include "jsonparse.cpp"
+void setConfig() ;
 int main()
 {
-    cout << "Hello world";
+    setConfig();
     return 0;
 }
