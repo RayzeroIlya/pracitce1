@@ -1,20 +1,17 @@
+#pragma once
 #include "main.h"
+#include "structures.h"
 #include <fstream>
 #include <sys/stat.h>
 
-struct Schema {
-    string name;
-    int tuples_limit;
-};
+
 
 bool createDir(string name);
-void setConfig() {
+void setConfig(Schema& schema) {
 
     ifstream file("schema.json");
     json j;
     file >>j;
-
-    Schema schema;
     for ( const auto& schema_json:j){
     schema.name = schema_json["name"].get<string>();
     createDir(schema.name);
@@ -28,17 +25,18 @@ void setConfig() {
         else {
        ofstream fout;
        fout.open (schema.name+"/"+table_name+"/"+"1.csv"); 
-        fout << "\""+table_name+"_" <<"pk\"" <<",";
+        fout << table_name+"_" <<"pk" <<",";
        int i=0;
     
         for( const auto& column : columns) {
-            fout << column;
+            //column.erase(0,1);
+            fout << column.get<string>();
             if (i<columns.size()-1) fout << ",";
             i++;
         }
         fout << endl;
         fout.close();
-        cout << "Created "+schema.name+"/"+table_name+"/"+table_name+"1.csv"<<endl;
+        cout << "Created "+schema.name+"/"+table_name+"/"+table_name+"/1.csv"<<endl;
         }
         fin.close();
         fin.open(schema.name+"/"+table_name+"/"+table_name+"_pk_sequence");
@@ -47,7 +45,7 @@ void setConfig() {
         } else{
             ofstream fout;
             fout.open(schema.name+"/"+table_name+"/"+table_name+"_pk_sequence");
-            fout << "\"0\"" << endl;
+            fout <<  1<< endl;
             fout.close();
             cout <<  "Created "+schema.name+"/"+table_name+"/"+table_name+"_pk_sequence"<< endl;
         }
@@ -63,7 +61,6 @@ void setConfig() {
             cout << "Created "+schema.name+"/"+table_name+"/"+table_name+"_lock" <<endl;
         }
         fin.close();
-    
     }
 }
 }   
