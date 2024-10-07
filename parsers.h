@@ -6,8 +6,10 @@ struct SQLQuery {
     string table_name;
     LinkedList* values;
     LinkedList* columns; // Для SELECT
+    LinkedList* tables;
     string condition;
 };
+
 
 SQLQuery parse_insert_query(const string& query) {
     SQLQuery result;
@@ -39,7 +41,7 @@ SQLQuery parse_insert_query(const string& query) {
 
     }
 
-    result.action = "INSERT";
+
 
     return result;
 }
@@ -61,10 +63,15 @@ SQLQuery parse_delete_query(const string& query) {
 
     // Проверяем наличие условия WHERE
     getline(ss, token, ';');
+    
     result.condition=token;
-    result.action = "DELETE";
 
     return result;
+}
+
+string removeSpaces(std::string str) {
+    str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
+    return str;
 }
 
 SQLQuery parse_select_query(const string& query) {
@@ -78,17 +85,30 @@ SQLQuery parse_select_query(const string& query) {
 
     // Получаем список колонок
     getline(ss, token, ' ');
-    stringstream columns_ss(token);
-    while (getline(columns_ss, token, ',')) {
-        result.columns->insert(token);
-    }
+    //stringstream columns_ss(token);
+    do {
+        if (token=="FROM") break;
+        stringstream column_ss(token);
+        getline(column_ss,token,',');
+        result.columns->push_back(token);
+     }
+    while(getline(ss,token,' '));
+    
+
 
     // Пропускаем ключевое слово FROM
     getline(ss, token, ' ');
-    getline(ss, token, ' ');
+
 
     // Получаем имя таблицы
-    result.table_name = token;
+    result.tables = new LinkedList();
+    do {
+        if (token=="WHERE") break;
+        stringstream table_ss(token);
+        getline(table_ss,token,',');
+        result.tables->push_back(token);
+     }
+    while(getline(ss,token,' '));
 
     // Проверяем наличие условия WHERE
     getline(ss, token, ' ');
@@ -96,7 +116,7 @@ SQLQuery parse_select_query(const string& query) {
         getline(ss, result.condition, ';'); // Извлекаем условие WHERE
     }
 
-    result.action = "SELECT";
+   
 
     return result;
 }

@@ -40,8 +40,24 @@ int get_row_count(const string& file_path) {
 void insert_into_csv(const Schema& schema,const string& table_name, const SQLQuery& query ) {
         
         int primary_key = get_primary_key(schema.name+"/"+table_name+"/"+table_name);
+    
+        
         int count_file= 1;
         string file_path = schema.name+"/"+table_name+"/"+to_string(count_file)+".csv";
+        ifstream fin(file_path);
+        int count_column =0;
+        string column_name;
+        getline(fin,column_name);
+        stringstream ss(column_name);
+        while(getline(ss,column_name,',')) {
+            count_column++;
+        }
+        for (Node * current = query.values->head;current!=nullptr;current=current->next,count_column--)
+        if (count_column!=1) {
+                    cout << "Ошибка добавления: неверного количество аргументов"  << endl;
+            return;}
+
+
     ofstream outfile(file_path, ios::app); // Открываем файл для добавления
          int row_count = get_row_count(file_path);
 

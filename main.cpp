@@ -22,6 +22,8 @@ int main()
         parsed_query = parse_delete_query(query);
         dmbs.delete_from_csv(schema,parsed_query);
     } else if (query.find("SELECT") != string::npos) {
+
+
         parsed_query = parse_select_query(query);
 
     } else {
@@ -41,3 +43,7 @@ int main()
 //DELETE FROM таблица1 WHERE колонка2 = '12345' AND колонка1 = 'somedata'
 //INSERT INTO таблица1 VALUES ('somedata','12345')
 //DELETE FROM таблица1 WHERE колонка2 = '12345'
+//SELECT колонка1, колонка1 FROM таблица1, таблица2
+
+
+//Седживк, Корман ?, 
