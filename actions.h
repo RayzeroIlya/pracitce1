@@ -52,7 +52,7 @@ void insert_into_csv(const Schema& schema,const string& table_name, const SQLQue
         while(getline(ss,column_name,',')) {
             count_column++;
         }
-        for (Node * current = query.values->head;current!=nullptr;current=current->next,count_column--)
+        for (Node * current = query.values->head;current!=nullptr;current=current->next,count_column--);
         if (count_column!=1) {
                     cout << "Ошибка добавления: неверного количество аргументов"  << endl;
             return;}

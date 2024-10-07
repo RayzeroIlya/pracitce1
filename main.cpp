@@ -41,7 +41,7 @@ int main()
     return 0;
 }
 //DELETE FROM таблица1 WHERE колонка2 = '12345' AND колонка1 = 'somedata'
-//INSERT INTO таблица1 VALUES ('somedata','12345')
+//INSERT INTO таблица1 VALUES ('somedata','12345','dsfsdg','dfgdfg')
 //DELETE FROM таблица1 WHERE колонка2 = '12345'
 //SELECT колонка1, колонка1 FROM таблица1, таблица2
 
