@@ -44,7 +44,12 @@ void insert_into_csv(const Schema& schema,const string& table_name, const SQLQue
         
         int count_file= 1;
         string file_path = schema.name+"/"+table_name+"/"+to_string(count_file)+".csv";
+
         ifstream fin(file_path);
+        if(!fin.is_open()) {
+            cout << "Файл "+file_path+" не найден!" <<endl;
+            return;
+        };
         int count_column =0;
         string column_name;
         getline(fin,column_name);

@@ -2,7 +2,7 @@
 #include "main.h"
 
 struct SQLQuery {
-    string action;
+    
     string table_name;
     LinkedList* values;
     LinkedList* columns; // Для SELECT
@@ -10,6 +10,12 @@ struct SQLQuery {
     string condition;
 };
 
+ bool syntaxCheck(string token) {
+    string verbs = "INSERT INTO";
+    if (verbs.find(token)!=string::npos) return true;
+    return false;
+
+ }
 
 SQLQuery parse_insert_query(const string& query) {
     SQLQuery result;
@@ -19,15 +25,30 @@ SQLQuery parse_insert_query(const string& query) {
 
     // Пропускаем ключевые слова INSERT INTO
     getline(ss, token, ' ');
+    if(token!="INSERT") {
+        result.table_name="-1";
+        return result;
+    };  
     getline(ss, token, ' ');
+    if (token!="INTO") {    
+        result.table_name="-1";
+        return result;
+    }
     getline(ss, token, ' ');
 
     // Получаем имя таблицы
+    
+    if(syntaxCheck(token)) {
+        result.table_name="-1";
+        return result;
+    }
     result.table_name = token;
-
     // Пропускаем ключевое слово VALUES
     getline(ss, token, ' ');
-
+    if(token!="VALUES"){
+        result.table_name="-1";
+        return result;
+    }
 
     // Получаем значения
     getline(ss, token, '(');
@@ -56,6 +77,10 @@ SQLQuery parse_delete_query(const string& query) {
 
     // Пропускаем ключевое слово FROM
     getline(ss, token, ' ');
+    if (token!="FROM") {
+    result.table_name="syntax_error";
+    return result;
+    }
     getline(ss, token, ' ');
 
     // Получаем имя таблицы
