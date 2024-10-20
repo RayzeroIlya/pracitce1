@@ -6,7 +6,7 @@ struct SQLQuery {
 
     string table_name;
     LinkedList* values;
-    LinkedList* columns; // Для SELECT
+    LinkedList* columns;
     LinkedList* tablesName;
     string condition;
 };

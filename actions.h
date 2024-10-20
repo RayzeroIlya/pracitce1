@@ -223,7 +223,7 @@ void delete_from_csv(const Schema& schema, const SQLQuery& query) {
 
 }
 
-Table* select_data(const SQLQuery& query, const string& file_path,Schema schema) {
+Table* select_data(const SQLQuery& query, const string& file_path,Schema& schema) {
     LinkedList* columns = new LinkedList(); 
     Table* table=new Table();
     int file_count=1;
@@ -258,7 +258,7 @@ Table* select_data(const SQLQuery& query, const string& file_path,Schema schema)
     }
     
     currentTableRow=new TableNode();
-
+    table->head->nextRow=currentTableRow;
     currentQueryColumn=query.columns->head;
     currentColumn=columns->head;
     while(fin.is_open() && getline(fin,row)){
@@ -288,59 +288,11 @@ Table* select_data(const SQLQuery& query, const string& file_path,Schema schema)
      
      
      }
-     schema.tables->push_back(table);
-}
-     columns->clear();
+    columns->clear();
      delete columns;
+}
+
      return table;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /*  ifstream infile(file_path);
-    string line;
-
-    // Читаем заголовок файла
-    getline(infile, line);
-
-    while (getline(infile, line)) {
-        // Проверяем условие WHERE
-        if (query.condition.empty() || evaluate_condition(line, query.condition, column_names)) {
-            // Если условие не задано или выполняется
-            stringstream ss(line);
-            string value;
-            while (getline(ss, value, ',')) {
-                // Проверяем, нужно ли выбрать текущую колонку
-                if (query.columns != nullptr && query.columns->find(value) != nullptr) {
-                    result->push_back(value);
-                }
-            }
-        }
-    }
-    infile.close();
-    return result;*/
 }
 
 };
