@@ -25,6 +25,8 @@ int main()
 
 
         parsed_query = parse_select_query(query);
+        schema.tables = dmbs.select_data(parsed_query,schema.name+"/");
+        schema.tables->print();
 
     } else {
         cout << "Некорректный запрос." << endl;
@@ -43,7 +45,7 @@ int main()
 //DELETE FROM таблица1 WHERE колонка2 = '12345' AND колонка1 = 'somedata'
 //INSERT INTO таблица1 VALUES ('somedata','12345','dsfsdg','dfgdfg')
 //DELETE FROM таблица1 WHERE колонка2 = '12345'
-//SELECT колонка1, колонка1 FROM таблица1, таблица2
+//SELECT колонка1 FROM таблица1
 //DELETE FROM WHERE колонка2 = '12345'
 
 

@@ -57,7 +57,7 @@ void insert_into_csv(const Schema& schema,const string& table_name, const SQLQue
         while(getline(ss,column_name,',')) {
             count_column++;
         }
-        for (Node * current = query.values->head;current!=nullptr;current=current->next,count_column--);
+        for (Node* current = query.values->head;current!=nullptr;current=current->next,count_column--);
         if (count_column!=1) {
                     cout << "Ошибка добавления: неверного количество аргументов"  << endl;
             return;}
@@ -223,9 +223,103 @@ void delete_from_csv(const Schema& schema, const SQLQuery& query) {
 
 }
 
-LinkedList* select_data(const SQLQuery& query, const string& file_path, const string& column_names) {
-    LinkedList* result = new LinkedList();
-    ifstream infile(file_path);
+Table* select_data(const SQLQuery& query, const string& file_path,Schema schema) {
+    LinkedList* columns = new LinkedList(); 
+    Table* table=new Table();
+    int file_count=1;
+    int current_row=1;
+    ifstream fin;
+    Node* currentTable=query.tablesName->head;
+    while (currentTable!=nullptr) {
+    fin.open(file_path+ currentTable->data+"/"+to_string(file_count)+".csv");
+    
+    string row,value;
+    getline(fin,row);
+    stringstream ss(row);
+    while (getline(ss,value,',')){
+        columns->push_back(value);
+    } // Название колонок
+
+    
+    Node* currentColumn=columns->head;
+    Node* currentQueryColumn=query.columns->head;
+    TableNode* currentTableRow = table->head;
+    while(currentTableRow!=nullptr) {
+        if (currentColumn->data==currentQueryColumn->data || currentColumn->data==currentTable->data+"_pk"){
+            currentTableRow->row->push_back(currentColumn->data);
+                if (currentColumn->data==currentTable->data+"_pk") {
+                currentColumn=currentColumn->next;
+                continue;
+            };
+            currentQueryColumn=currentQueryColumn->next;
+        }
+            currentColumn=currentColumn->next;
+            currentTableRow=currentTableRow->nextRow;
+    }
+    
+    currentTableRow=new TableNode();
+
+    currentQueryColumn=query.columns->head;
+    currentColumn=columns->head;
+    while(fin.is_open() && getline(fin,row)){
+    
+    
+        stringstream ss(row);
+
+
+        while(getline(ss,value,',') && currentQueryColumn!= nullptr) {
+        if (currentColumn->data==currentQueryColumn->data || currentColumn->data==currentTable->data+"_pk"){
+            currentTableRow->row->push_back(value);
+
+            if (currentColumn->data==currentTable->data+"_pk") {
+                currentColumn=currentColumn->next;
+                continue;
+            };
+            currentQueryColumn=currentQueryColumn->next;
+        }
+        currentColumn=currentColumn->next;
+
+
+        }
+        currentTableRow->nextRow=new TableNode();
+        currentTableRow=currentTableRow->nextRow;
+        currentQueryColumn=query.columns->head;
+        currentColumn=columns->head;
+     
+     
+     }
+     schema.tables->push_back(table);
+}
+     columns->clear();
+     delete columns;
+     return table;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  /*  ifstream infile(file_path);
     string line;
 
     // Читаем заголовок файла
@@ -246,7 +340,7 @@ LinkedList* select_data(const SQLQuery& query, const string& file_path, const st
         }
     }
     infile.close();
-    return result;
+    return result;*/
 }
 
 };
