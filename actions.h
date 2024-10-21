@@ -223,8 +223,9 @@ void delete_from_csv(const Schema& schema, const SQLQuery& query) {
 
 }
 
-Table* select_data(const SQLQuery& query, const string& file_path,Schema& schema) {
+Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schema) {
     LinkedList* columns = new LinkedList(); 
+    Tables* tables=new Tables();
     Table* table=new Table();
     int file_count=1;
     int current_row=1;
@@ -290,9 +291,10 @@ Table* select_data(const SQLQuery& query, const string& file_path,Schema& schema
      }
     columns->clear();
      delete columns;
+    tables->push_back(table);
 }
 
-     return table;
+     return tables;
 }
 
 };

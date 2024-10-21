@@ -5,14 +5,15 @@
 struct Table;
 
 // Структура данных для узла связанного списка
-
 struct Node {
     string data;
     Node* next;
 
     Node(const string& data) : data(data), next(nullptr) {}
-    Node(Table* table) : data(data), next(nullptr) {}
+
 };
+
+
 
 // Структура данных для связанного списка
 
@@ -134,6 +135,54 @@ struct Table{
         while(current!= nullptr) {
             current->row->print();
             current=current->nextRow;
+        }
+
+    }
+};
+
+
+struct  TablesNode {
+    Table* table;
+    TablesNode* nextTable;
+    TablesNode(Table* table) : table(table), nextTable(nullptr) {}
+};
+
+struct Tables {
+    TablesNode* head;
+
+    Tables() : head(nullptr) {}
+      void push_back(Table* data) {
+        TablesNode* newNode = new TablesNode(data);
+        if (head == nullptr) {
+            head = newNode;
+            return;
+        }
+
+        TablesNode* current = head;
+        while (current->nextTable != nullptr) {
+            current = current->nextTable;
+        }
+        current->nextTable = newNode;
+    }
+
+        void print(TablesNode* table,LinkedList* row){
+        TablesNode* currentTable=head;
+
+        while (currentTable!= nullptr) {
+            row->print();
+            LinkedList* currentRow = currentTable->table->head->row;
+            print(currentTable->nextTable,currentRow);
+        }
+
+    }
+
+    void print(Tables* table){
+        TablesNode* currentTable=head;
+
+        while (currentTable!= nullptr) {
+            LinkedList* currentRow = currentTable->table->head->row;
+            print(currentTable->nextTable,currentRow);
+            currentRow=currentTable->table->head->nextRow->row;
         }
 
     }

@@ -116,7 +116,7 @@ string removeSpaces(std::string str) {
 SQLQuery parse_select_query(const string& query) {
     SQLQuery result;
     result.columns = new LinkedList();
-    stringstream ss(query, ios_base::ate | ios_base::in | ios_base::out);
+    stringstream ss(query);
     string token, cur;
 
     // Пропускаем ключевое слово SELECT
@@ -127,7 +127,7 @@ SQLQuery parse_select_query(const string& query) {
     }
     // Получаем список колонок
     getline(ss, token, ' ');
-    stringstream cur_ss(token, ios_base::ate | ios_base::in | ios_base::out);
+    stringstream cur_ss(token);
 
     while(getline(cur_ss,token,',')){
         if (is_service_word(token)) {
@@ -149,9 +149,10 @@ SQLQuery parse_select_query(const string& query) {
     // Получаем имя таблицы
     getline(ss,token,' ');
     result.tablesName = new LinkedList();
-    cur_ss.clear();
-        cur_ss<<(token);
-    while(getline(cur_ss,token,',')) {
+    stringstream cur_ss1(token);
+    //cur_ss.clear();
+  //  cur_ss<<(token);
+    while(getline(cur_ss1,token,',')) {
         if (is_service_word(token)) {
         result.table_name="-1";
         return result;

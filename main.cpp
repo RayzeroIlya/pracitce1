@@ -35,8 +35,11 @@ int main()
             cout << "Синтаксическая ошибка" << endl;
             continue;
         }
-        Table* table=dmbs.select_data(parsed_query,schema.name+"/",schema);
-        table->print();
+        Tables* tables=dmbs.select_data(parsed_query,schema.name+"/",schema);
+        
+        
+        
+        tables->print(tables);
 
     } else {
         cout << "Некорректный запрос." << endl;
@@ -47,8 +50,10 @@ int main()
 }
 //DELETE FROM таблица1 WHERE колонка2 = '12345' AND колонка1 = 'somedata'
 //INSERT INTO таблица1 VALUES ('somedata','12345','dsfsdg','dfgdfg')
+//INSERT INTO таблица2 VALUES ('somedata','12345')
 //DELETE FROM таблица1 WHERE колонка2 = '12345'
 //SELECT колонка1 FROM таблица1
+//SELECT колонка1 FROM таблица1,таблица2
 //DELETE FROM WHERE колонка2 = '12345'
 
 
