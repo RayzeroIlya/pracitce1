@@ -176,8 +176,8 @@ struct Tables {
 
     }
 
-    void print(Tables* table){
-        TablesNode* currentTable=head;
+    void print(Tables* tables){
+        TablesNode* currentTable=tables->head;
 
         while (currentTable!= nullptr) {
             LinkedList* currentRow = currentTable->table->head->row;

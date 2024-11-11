@@ -233,7 +233,7 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
     Node* currentTable=query.tablesName->head;
     while (currentTable!=nullptr) {
     fin.open(file_path+ currentTable->data+"/"+to_string(file_count)+".csv");
-    
+    cout << fin.is_open() << endl;
     string row,value;
     getline(fin,row);
     stringstream ss(row);
@@ -245,7 +245,7 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
     Node* currentColumn=columns->head;
     Node* currentQueryColumn=query.columns->head;
     TableNode* currentTableRow = table->head;
-    while(currentTableRow!=nullptr) {
+    while(currentTableRow!=nullptr && currentColumn!=nullptr) {
         if (currentColumn->data==currentQueryColumn->data || currentColumn->data==currentTable->data+"_pk"){
             currentTableRow->row->push_back(currentColumn->data);
                 if (currentColumn->data==currentTable->data+"_pk") {
@@ -290,8 +290,10 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
      
      }
     columns->clear();
-     delete columns;
+    delete columns;
     tables->push_back(table);
+    currentTable=currentTable->next;
+    fin.close();
 }
 
      return tables;
