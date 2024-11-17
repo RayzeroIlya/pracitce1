@@ -164,7 +164,9 @@ SQLQuery parse_select_query(const string& query) {
     // Проверяем наличие условия WHERE
     getline(ss, token, ' ');
     if (token == "WHERE") {
-        getline(ss, result.condition, ';'); // Извлекаем условие WHERE
+        result.condition=token;
+        getline(ss, token, ';'); // Извлекаем условие WHERE
+        result.condition+=" "+token;
     }
     return result;
 }

@@ -68,10 +68,15 @@ struct LinkedList {
     void print() {
         Node* current = head;
         while (current != nullptr) {
-            cout << current->data << "\t";
+            if (current->next==nullptr) {
+                cout <<current->data;
+                break;
+            }
+            cout << current->data << ",";
+            
             current = current->next;
         }
-        cout << endl;
+        //cout << endl;
     }
 
     // Освобождение памяти
@@ -112,11 +117,18 @@ struct TableNode {
     TableNode* nextRow;
     TableNode() : row(new LinkedList()), nextRow(nullptr) {}
     TableNode(LinkedList* row) : row(row), nextRow(nullptr) {}
+
+
+
+
+
 };
 
 struct Table{
+    string name;
     TableNode* head;
-    Table() : head(new TableNode()){}
+    Table() : name(),head(new TableNode()){}
+    Table(string _name) : name(_name),head(new TableNode()){}
       void push_back(LinkedList* data) {
         TableNode* newNode = new TableNode(data);
         if (head == nullptr) {
@@ -145,12 +157,13 @@ struct  TablesNode {
     Table* table;
     TablesNode* nextTable;
     TablesNode(Table* table) : table(table), nextTable(nullptr) {}
+    TablesNode() : table(nullptr), nextTable(nullptr) {}
 };
 
 struct Tables {
     TablesNode* head;
 
-    Tables() : head(nullptr) {}
+    Tables() : head(new TablesNode()) {}
       void push_back(Table* data) {
         TablesNode* newNode = new TablesNode(data);
         if (head == nullptr) {
@@ -175,15 +188,57 @@ struct Tables {
         }
 
     }
+    string buildRow(LinkedList* row){
+        string build_row;
+        Node* currentNode=row->head;
+        while (currentNode){
+            if (currentNode->next==nullptr){
+                build_row+=currentNode->data;
+                break;
+            }
+            build_row+=currentNode->data+",";
+            currentNode=currentNode->next;
+        }
+        return build_row;
+    }
 
     void print(Tables* tables){
         TablesNode* currentTable=tables->head;
-
-        while (currentTable!= nullptr) {
-            LinkedList* currentRow = currentTable->table->head->row;
-            print(currentTable->nextTable,currentRow);
-            currentRow=currentTable->table->head->nextRow->row;
+        TableNode* currentRow=currentTable->table->head;
+        string row;
+        while (currentTable && currentTable->table->head->nextRow->row->head){
+            currentTable->table->head->row->print();
+            cout << "\t";
+            currentTable=currentTable->nextTable;
         }
+        cout <<endl;
+        currentTable=tables->head;
+        
+        printRows(currentTable,row);
+
+
+    }
+
+
+
+
+    void printRows(TablesNode* table,string row){
+        
+        TableNode* currentRow=table->table->head->nextRow;
+        string part_row=buildRow(currentRow->row);
+        while(table->nextTable!=nullptr && currentRow->row->head && table->nextTable->table->head->nextRow->row->head){
+        printRows(table->nextTable,row+part_row+"\t");
+        currentRow=currentRow->nextRow;
+        if (currentRow==nullptr) return;
+        part_row=buildRow(currentRow->row);
+        }
+    if (table->nextTable==nullptr || table->nextTable->table->head->nextRow->row->head==nullptr){
+        while(currentRow->row->head!= nullptr){
+            cout << row  << buildRow(currentRow->row);
+            currentRow=currentRow->nextRow;
+            cout <<endl;
+        }
+    }
 
     }
 };

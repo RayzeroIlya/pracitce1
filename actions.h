@@ -59,7 +59,7 @@ void insert_into_csv(const Schema& schema,const string& table_name, const SQLQue
         }
         for (Node* current = query.values->head;current!=nullptr;current=current->next,count_column--);
         if (count_column!=1) {
-                    cout << "Ошибка добавления: неверного количество аргументов"  << endl;
+                    cout << "Ошибка добавления: неверное количество аргументов"  << endl;
             return;}
 
 
@@ -226,41 +226,40 @@ void delete_from_csv(const Schema& schema, const SQLQuery& query) {
 Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schema) {
     LinkedList* columns = new LinkedList(); 
     Tables* tables=new Tables();
-    Table* table=new Table();
     int file_count=1;
     int current_row=1;
     ifstream fin;
-    Node* currentTable=query.tablesName->head;
+    Node* table_name=query.tablesName->head;
+    tables->head->table=new Table(table_name->data);
+    TablesNode* currentTable=tables->head;
     while (currentTable!=nullptr) {
-    fin.open(file_path+ currentTable->data+"/"+to_string(file_count)+".csv");
-    cout << fin.is_open() << endl;
+    fin.open(file_path+ currentTable->table->name+"/"+to_string(file_count)+".csv");
     string row,value;
     getline(fin,row);
     stringstream ss(row);
     while (getline(ss,value,',')){
         columns->push_back(value);
     } // Название колонок
+    LinkedList* query_columns=query.columns;
 
-    
     Node* currentColumn=columns->head;
-    Node* currentQueryColumn=query.columns->head;
-    TableNode* currentTableRow = table->head;
+
+    TableNode* currentTableRow = currentTable->table->head;
     while(currentTableRow!=nullptr && currentColumn!=nullptr) {
-        if (currentColumn->data==currentQueryColumn->data || currentColumn->data==currentTable->data+"_pk"){
+        if (query_columns->find(currentColumn->data) || currentColumn->data==currentTable->table->name+"_pk"){
             currentTableRow->row->push_back(currentColumn->data);
-                if (currentColumn->data==currentTable->data+"_pk") {
+                if (currentColumn->data==currentTable->table->name+"_pk") {
                 currentColumn=currentColumn->next;
                 continue;
             };
-            currentQueryColumn=currentQueryColumn->next;
         }
             currentColumn=currentColumn->next;
-            currentTableRow=currentTableRow->nextRow;
+
     }
-    
+    currentTableRow=currentTableRow->nextRow;
     currentTableRow=new TableNode();
-    table->head->nextRow=currentTableRow;
-    currentQueryColumn=query.columns->head;
+    currentTable->table->head->nextRow=currentTableRow;
+
     currentColumn=columns->head;
     while(fin.is_open() && getline(fin,row)){
     
@@ -268,15 +267,15 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
         stringstream ss(row);
 
 
-        while(getline(ss,value,',') && currentQueryColumn!= nullptr) {
-        if (currentColumn->data==currentQueryColumn->data || currentColumn->data==currentTable->data+"_pk"){
+        while(getline(ss,value,',') && currentColumn!= nullptr) {
+        if (query_columns->find(currentColumn->data) || currentColumn->data==currentTable->table->name+"_pk"){
             currentTableRow->row->push_back(value);
 
-            if (currentColumn->data==currentTable->data+"_pk") {
+            if (currentColumn->data==currentTable->table->name+"_pk") {
                 currentColumn=currentColumn->next;
                 continue;
             };
-            currentQueryColumn=currentQueryColumn->next;
+
         }
         currentColumn=currentColumn->next;
 
@@ -284,19 +283,48 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
         }
         currentTableRow->nextRow=new TableNode();
         currentTableRow=currentTableRow->nextRow;
-        currentQueryColumn=query.columns->head;
+
         currentColumn=columns->head;
      
      
      }
     columns->clear();
-    delete columns;
-    tables->push_back(table);
-    currentTable=currentTable->next;
+  //  delete columns;
+
+    table_name=table_name->next;
+    if (table_name==nullptr) break;
+
+    currentTable->nextTable=new TablesNode();
+    currentTable=currentTable->nextTable;
+    currentTable->table=new Table(table_name->data);
     fin.close();
 }
+    fin.close();
 
+    if (!query.condition.empty()) {
+        string cond = query.condition;
+        currentTable=tables->head;
+        while (currentTable){
+        TableNode* currentRow=currentTable->table->head;
+        string column_names=tables->buildRow(currentRow->row);
+        TableNode* prevRow=currentRow;
+        currentRow=currentRow->nextRow;
+            while (currentRow->row->head){
+                TableNode* temp=currentRow;    
+                if (!evaluate_condition(tables->buildRow(currentRow->row),cond,column_names)){
+                    prevRow->nextRow=currentRow->nextRow;
+                    temp->row->clear();
+                    delete temp;
+                    currentRow=prevRow->nextRow;
+                    continue;
+        }
+            prevRow=prevRow->nextRow;
+            currentRow=currentRow->nextRow;
+            }
+            currentTable=currentTable->nextTable;
+    }
+
+}
      return tables;
 }
-
 };
