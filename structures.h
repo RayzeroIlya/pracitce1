@@ -10,6 +10,7 @@ struct Node {
     Node* next;
 
     Node(const string& data) : data(data), next(nullptr) {}
+      ~Node() {}
 
 };
 
@@ -20,6 +21,7 @@ struct Node {
 struct LinkedList {
     Node* head;
     LinkedList() : head(nullptr) {}
+      ~LinkedList() {clear();}
     // Вставка элемента в начало списка
     void insert(const string& data) {
         Node* newNode = new Node(data);
@@ -117,6 +119,7 @@ struct TableNode {
     TableNode* nextRow;
     TableNode() : row(new LinkedList()), nextRow(nullptr) {}
     TableNode(LinkedList* row) : row(row), nextRow(nullptr) {}
+        ~TableNode() { delete row; }
 
 
 
@@ -129,6 +132,14 @@ struct Table{
     TableNode* head;
     Table() : name(),head(new TableNode()){}
     Table(string _name) : name(_name),head(new TableNode()){}
+     ~Table() { 
+        TableNode* current = head;
+        while (current != nullptr) {
+            TableNode* next = current->nextRow;
+            delete current;
+            current = next;
+        }
+    }
       void push_back(LinkedList* data) {
         TableNode* newNode = new TableNode(data);
         if (head == nullptr) {
@@ -158,12 +169,23 @@ struct  TablesNode {
     TablesNode* nextTable;
     TablesNode(Table* table) : table(table), nextTable(nullptr) {}
     TablesNode() : table(nullptr), nextTable(nullptr) {}
+    ~TablesNode() { delete table; }
 };
 
 struct Tables {
     TablesNode* head;
 
     Tables() : head(new TablesNode()) {}
+
+    ~Tables() {
+        TablesNode* current = head;
+        while (current != nullptr) {
+            TablesNode* next = current->nextTable;
+            delete current;
+            current = next;
+        }
+    }
+
       void push_back(Table* data) {
         TablesNode* newNode = new TablesNode(data);
         if (head == nullptr) {
