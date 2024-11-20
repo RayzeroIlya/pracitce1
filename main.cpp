@@ -36,10 +36,8 @@ int main()
             continue;
         }
         Tables* tables=dmbs.select_data(parsed_query,schema.name+"/",schema);
-        
-        
-        
         tables->print(tables);
+        delete tables;
 
     } else {
         cout << "Некорректный запрос." << endl;
