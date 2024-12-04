@@ -129,6 +129,7 @@ SQLQuery parse_select_query(const string& query) {
     getline(ss, token, ' ');
     stringstream cur_ss(token);
 
+    if (token != "FROM") {
     while(getline(cur_ss,token,',')){
         if (is_service_word(token)) {
             result.table_name="-1";
@@ -136,16 +137,17 @@ SQLQuery parse_select_query(const string& query) {
         };
         result.columns->push_back(token);
     };
+    }
     
 
 
     // Пропускаем ключевое слово FROM
     getline(ss, token, ' ');
-    if (token!="FROM"){
+   /* if (token!="FROM"){
         result.table_name="-1";
         return result;
     }
-
+        */      
     // Получаем имя таблицы
     getline(ss,token,' ');
     result.tablesName = new LinkedList();

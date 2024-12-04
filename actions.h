@@ -148,7 +148,9 @@ bool evaluate_condition(const string& line, const string& condition, const strin
             }
         }
     }
+
                 if(tokens->head->data == "WHERE") tokens->remove("WHERE");
+                if (column_names.find(tokens->head->data) == string::npos) return true;
                 if (tokens->head->next->data == "=") {
                 string column = tokens->head->data;
                 stringstream ss(column_names);
@@ -242,12 +244,11 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
         columns->push_back(currentTable->table->name+"."+value);
     } // Название колонок
     LinkedList* query_columns=query.columns;
-
     Node* currentColumn=columns->head;
-
     TableNode* currentTableRow = currentTable->table->head;
-    while(currentTableRow!=nullptr && currentColumn!=nullptr) {
-        if (query_columns->find(currentColumn->data) || currentColumn->data==table_name->data+"."+currentTable->table->name+"_pk"){
+    while(currentTableRow!=nullptr && currentColumn!=nullptr ) {
+        if ((query_columns->find(currentColumn->data) && query_columns->head!=nullptr) 
+        || query_columns->head==nullptr || currentColumn->data==table_name->data+"."+currentTable->table->name+"_pk"){
             currentTableRow->row->push_back(currentColumn->data);
                 if (currentColumn->data==currentTable->table->name+"_pk") {
                 currentColumn=currentColumn->next;
@@ -255,7 +256,6 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
             };
         }
             currentColumn=currentColumn->next;
-
     }
     currentTableRow=currentTableRow->nextRow;
     currentTableRow=new TableNode();
@@ -263,31 +263,23 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
 
     currentColumn=columns->head;
     while(fin.is_open() && getline(fin,row)){
-    
-    
         stringstream ss(row);
-
-
         while(getline(ss,value,',') && currentColumn!= nullptr) {
-        if (query_columns->find(currentColumn->data) || currentColumn->data==table_name->data+"."+currentTable->table->name+"_pk"){
+         if (query_columns->head==nullptr) {
             currentTableRow->row->push_back(value);
-
+         }   
+        else if (query_columns->find(currentColumn->data) || currentColumn->data==table_name->data+"."+currentTable->table->name+"_pk"){
+            currentTableRow->row->push_back(value);
             if (currentColumn->data==currentTable->table->name+"_pk") {
                 currentColumn=currentColumn->next;
                 continue;
             };
-
         }
         currentColumn=currentColumn->next;
-
-
         }
         currentTableRow->nextRow=new TableNode();
         currentTableRow=currentTableRow->nextRow;
-
         currentColumn=columns->head;
-     
-     
      }
     columns->clear();
   //  delete columns;
@@ -299,7 +291,7 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
     currentTable=currentTable->nextTable;
     currentTable->table=new Table(table_name->data);
     fin.close();
-}
+} ////
     fin.close();
 
     if (!query.condition.empty()) {
@@ -324,7 +316,6 @@ Tables* select_data(const SQLQuery& query, const string& file_path,Schema& schem
             }
             currentTable=currentTable->nextTable;
     }
-
 }
      return tables;
 }
